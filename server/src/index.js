@@ -1,34 +1,36 @@
-const { ApolloServer } = require('apollo-server');
-const typeDefs = require('./schema');
+const { ApolloServer } = require("@apollo/server");
+const { startStandaloneServer } = require("@apollo/server/standalone");
+const typeDefs = require("./schema");
+const axios = require("axios");
 
-const mocks = {
-  Query: () => ({
-    tracksForHome: () => [...new Array(9)],
-  }),
-  Track: () => ({
-    id: () => 'track_01',
-    title: () => 'Astro Kitty, Space Explorer',
-    author: () => {
-      return {
-        name: 'Grumpy Cat',
-        photo: 'https://res.cloudinary.com/dety84pbu/image/upload/v1606816219/kitty-veyron-sm_mctf3c.jpg',
-      };
+const baseUrl =
+  process.env.API_URL ?? "https://odyssey-lift-off-rest-api.herokuapp.com";
+
+const resolvers = {
+  Query: {
+    tracksForHome: async () => {
+      const { data: tracks } = await axios.get(`${baseUrl}/tracks`);
+
+      // tracksWithAuthors
+      return tracks.map(async ({ id, title, authorId, thumbnail }) => {
+        const { data: author } = await axios.get(
+          `${baseUrl}/author/${authorId}`
+        );
+
+        return {
+          id,
+          title,
+          author,
+          thumbnail,
+        };
+      });
     },
-    thumbnail: () => 'https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg',
-    length: () => 1210,
-    modulesCount: () => 6,
-  }),
+  },
 };
 
-const server = new ApolloServer({
-  typeDefs,
-  mocks,
-});
+const server = new ApolloServer({ typeDefs, resolvers });
 
-server.listen().then(() => {
-  console.log(`
-    🚀  Server is running!
-    🔉  Listening on port 4000
-    📭  Query at http://localhost:4000
-`);
-});
+// run server
+startStandaloneServer(server, {
+  listen: { port: 4000 },
+}).then(({ url }) => console.log(`🚀  Server ready at: ${url}`));

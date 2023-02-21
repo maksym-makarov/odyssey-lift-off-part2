@@ -1,0 +1,14 @@
+{
+  "name": "odyssey-lift-off-part2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:maksym-makarov/odyssey-lift-off-part2.git",
+  "author": "Maksym Makarov <maksym.makarov@smartpension.co.uk>",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn --cwd server start & yarn --cwd client start"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.2"
+  }
+}
