@@ -1,36 +1,23 @@
-const { ApolloServer } = require("@apollo/server");
-const { startStandaloneServer } = require("@apollo/server/standalone");
-const typeDefs = require("./schema");
-const axios = require("axios");
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { ApolloServer } from "@apollo/server";
+import { typeDefs } from "./schema.js";
+import { TracksAPI } from "./datasources/tracks-api.js";
 
 const baseUrl =
-  process.env.API_URL ?? "https://odyssey-lift-off-rest-api.herokuapp.com";
+  process.env.API_URL ?? "https://odyssey-lift-off-rest-api.herokuapp.com/";
+
+const api = new TracksAPI(baseUrl);
 
 const resolvers = {
   Query: {
-    tracksForHome: async () => {
-      const { data: tracks } = await axios.get(`${baseUrl}/tracks`);
-
-      // tracksWithAuthors
-      return tracks.map(async ({ id, title, authorId, thumbnail }) => {
-        const { data: author } = await axios.get(
-          `${baseUrl}/author/${authorId}`
-        );
-
-        return {
-          id,
-          title,
-          author,
-          thumbnail,
-        };
-      });
-    },
+    tracksForHome: api.getTracksForHome,
   },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
-// run server
-startStandaloneServer(server, {
+const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
-}).then(({ url }) => console.log(`🚀  Server ready at: ${url}`));
+});
+
+console.log(`🚀  Server ready at: ${url}`);

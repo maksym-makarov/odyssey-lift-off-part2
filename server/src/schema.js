@@ -1,4 +1,4 @@
-const typeDefs = `#graphql
+export const typeDefs = `#graphql
     type Query {
         # query to get tracks array for the Home page
         tracksForHome: [Track!]!
@@ -26,5 +26,3 @@ const typeDefs = `#graphql
         photo: String
     }
 `;
-
-module.exports = typeDefs;
