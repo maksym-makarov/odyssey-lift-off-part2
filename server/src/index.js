@@ -12,6 +12,9 @@ const resolvers = {
   Query: {
     tracksForHome: api.getTracksForHome,
   },
+  Track: {
+    author: ({ authorId }, _, { dataSources }) => {},
+  },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });

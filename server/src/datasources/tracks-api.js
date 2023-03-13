@@ -6,7 +6,12 @@ export class TracksAPI extends RESTDataSource {
     this.baseURL = baseURL;
   }
 
-  getTracksForHome = async () => {
+  getTracksForHome = async (parent, args, context, info) => {
+    // console.log("parent: ", parent);
+    // console.log("args: ", args);
+    // console.log("context: ", context);
+    // console.log("info: ", info);
+
     const tracks = await this.get("tracks");
     // tracksWithAuthors
     return tracks.map(async ({ id, title, authorId, thumbnail }) => {
